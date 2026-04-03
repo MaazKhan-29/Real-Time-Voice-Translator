@@ -1,69 +1,126 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MultiGuru Web Translator</title>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/static/style.css">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LinguaSync — Live Voice Translator</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400&display=swap"
+        rel="stylesheet" />
+    <link rel="stylesheet" href="/static/style.css" />
 </head>
+
 <body>
-    <div class="background-orbs">
-        <div class="orb orb1"></div>
-        <div class="orb orb2"></div>
-        <div class="orb orb3"></div>
-    </div>
-    
-    <div class="glass-container">
-        <header>
-            <div class="logo">
-                <span class="icon">🎙️</span>
-                <h1>MultiGuru Voice</h1>
+
+    <!-- Noise texture overlay -->
+    <div class="noise"></div>
+
+    <!-- Animated background grid -->
+    <canvas id="bgCanvas" class="bg-canvas"></canvas>
+
+    <div class="shell">
+
+        <!-- ── Header ─────────────────────────────────────── -->
+        <header class="header">
+            <div class="brand">
+                <svg class="brand-icon" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="18" cy="18" r="17" stroke="currentColor" stroke-width="1.5" />
+                    <path d="M9 18 Q14 8 18 18 Q22 28 27 18" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" fill="none" />
+                    <circle cx="18" cy="18" r="2.5" fill="currentColor" />
+                </svg>
+                <span class="brand-name">LinguaSync</span>
             </div>
-            <p class="subtitle">Continuous Real-time Translation.</p>
+            <div class="header-right">
+                <span class="version-tag">v2.0 · Continuous</span>
+            </div>
         </header>
 
-        <main>
-            <div class="controls">
-                <div class="lang-selector">
-                    <label for="inputLang">Select Input Language</label>
-                    <select id="inputLang"></select>
-                </div>
-                
-                <div class="exchange-icon">⮂</div>
+        <!-- ── Language Controls ───────────────────────────── -->
+        <section class="lang-strip">
+            <div class="lang-block">
+                <label class="field-label">INPUT LANGUAGE</label>
+                <select id="inputLang" class="lang-select"></select>
+            </div>
 
-                <div class="lang-selector">
-                    <label for="outputLang">Select Output Language</label>
-                    <select id="outputLang"></select>
+            <button id="swapBtn" class="swap-btn" title="Swap languages">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                    <path d="M7 16V4m0 0L3 8m4-4l4 4M17 8v12m0 0l4-4m-4 4l-4-4" />
+                </svg>
+            </button>
+
+            <div class="lang-block">
+                <label class="field-label">OUTPUT LANGUAGE</label>
+                <select id="outputLang" class="lang-select"></select>
+            </div>
+        </section>
+
+        <!-- ── Mic Stage ───────────────────────────────────── -->
+        <section class="mic-stage">
+
+            <!-- Waveform visualiser -->
+            <canvas id="waveCanvas" class="wave-canvas" width="600" height="80"></canvas>
+
+            <!-- Central mic button -->
+            <div class="mic-ring-outer" id="micRingOuter">
+                <div class="mic-ring-inner">
+                    <button id="recordBtn" class="mic-btn" aria-label="Toggle recording">
+                        <!-- Mic off icon -->
+                        <svg class="icon-mic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+                            stroke-linecap="round">
+                            <rect x="9" y="2" width="6" height="12" rx="3" />
+                            <path d="M5 10a7 7 0 0 0 14 0" />
+                            <line x1="12" y1="17" x2="12" y2="21" />
+                            <line x1="9" y1="21" x2="15" y2="21" />
+                        </svg>
+                        <!-- Stop icon (shown when recording) -->
+                        <svg class="icon-stop" viewBox="0 0 24 24" fill="currentColor">
+                            <rect x="5" y="5" width="14" height="14" rx="2" />
+                        </svg>
+                    </button>
                 </div>
             </div>
 
-            <div class="recording-zone">
-                <button id="recordBtn" class="record-btn">
-                    <div class="pulse-ring"></div>
-                    <span class="mic-icon">🎤</span>
-                </button>
-                <div id="statusText" class="status-text">Ready to record</div>
+            <!-- Status row -->
+            <div class="status-row">
+                <span class="live-dot" id="liveDot"></span>
+                <span class="status-text" id="statusText">Click the mic to start</span>
+                <span class="queue-badge" id="queueBadge" style="display:none"></span>
             </div>
 
-            <div class="results-container">
-                <div class="result-box">
-                    <h3>Recognized Log</h3>
-                    <div id="recognizedText" class="output-text chat-container">
-                        <div class="placeholder">Listening phrases will natively log here...</div>
-                    </div>
-                </div>
+        </section>
 
-                <div class="result-box highlighted">
-                    <h3>Translated Log & Playback</h3>
-                    <div id="translatedText" class="output-text chat-container">
-                        <div class="placeholder">Translations will queue up and play here...</div>
-                    </div>
+        <!-- ── Output Panels ───────────────────────────────── -->
+        <section class="panels">
+
+            <div class="panel" id="panelRecognised">
+                <div class="panel-header">
+                    <span class="panel-label">RECOGNISED</span>
+                    <button class="clear-btn" data-target="recognisedLog" title="Clear">✕</button>
+                </div>
+                <div class="log" id="recognisedLog">
+                    <p class="empty-hint">Recognised speech will appear here…</p>
                 </div>
             </div>
-        </main>
-    </div>
+
+            <div class="panel panel--translated" id="panelTranslated">
+                <div class="panel-header">
+                    <span class="panel-label">TRANSLATED <span class="playback-tag" id="playbackTag">▶
+                            PLAYING</span></span>
+                    <button class="clear-btn" data-target="translatedLog" title="Clear">✕</button>
+                </div>
+                <div class="log" id="translatedLog">
+                    <p class="empty-hint">Translations + audio playback queue here…</p>
+                </div>
+            </div>
+
+        </section>
+
+    </div><!-- /shell -->
 
     <script src="/static/script.js"></script>
 </body>
+
 </html>
