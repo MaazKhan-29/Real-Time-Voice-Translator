@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MultiGuru Web Translator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="background-orbs">
+        <div class="orb orb1"></div>
+        <div class="orb orb2"></div>
+        <div class="orb orb3"></div>
+    </div>
+    
+    <div class="glass-container">
+        <header>
+            <div class="logo">
+                <span class="icon">🎙️</span>
+                <h1>MultiGuru Voice</h1>
+            </div>
+            <p class="subtitle">Continuous Real-time Translation.</p>
+        </header>
+
+        <main>
+            <div class="controls">
+                <div class="lang-selector">
+                    <label for="inputLang">Select Input Language</label>
+                    <select id="inputLang"></select>
+                </div>
+                
+                <div class="exchange-icon">⮂</div>
+
+                <div class="lang-selector">
+                    <label for="outputLang">Select Output Language</label>
+                    <select id="outputLang"></select>
+                </div>
+            </div>
+
+            <div class="recording-zone">
+                <button id="recordBtn" class="record-btn">
+                    <div class="pulse-ring"></div>
+                    <span class="mic-icon">🎤</span>
+                </button>
+                <div id="statusText" class="status-text">Ready to record</div>
+            </div>
+
+            <div class="results-container">
+                <div class="result-box">
+                    <h3>Recognized Log</h3>
+                    <div id="recognizedText" class="output-text chat-container">
+                        <div class="placeholder">Listening phrases will natively log here...</div>
+                    </div>
+                </div>
+
+                <div class="result-box highlighted">
+                    <h3>Translated Log & Playback</h3>
+                    <div id="translatedText" class="output-text chat-container">
+                        <div class="placeholder">Translations will queue up and play here...</div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="/static/script.js"></script>
+</body>
+</html>
